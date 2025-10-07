@@ -24,7 +24,7 @@ fastify.register(rateLimit, {
 // const database = new DatabaseMemory();
 const database = new DatabasePostgres();
 
-fastify.get("/", async (request, reply) => {
+server.get("/", async (request, reply) => {
   return { message: "Bem-vindo à API!" };
 });
 
