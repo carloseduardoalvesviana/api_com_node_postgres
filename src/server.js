@@ -1,11 +1,32 @@
 import { fastify } from "fastify";
+import rateLimit from "@fastify/rate-limit";
 import { DatabasePostgres } from "./repositories/database-postgres.js";
 // import { Database } from "./src/repositories/database-memory.js";
 
-const server = fastify();
+const server = fastify({
+  logger: true,
+});
+
+fastify.register(rateLimit, {
+  max: 100, // Máximo de requisições por janela de tempo
+  timeWindow: "1 minute", // Janela de tempo (1 minuto)
+  errorResponseBuilder: (req, context) => {
+    return {
+      code: 429,
+      error: "Too Many Requests",
+      message: `Você atingiu o limite de ${context.max} requisições por minuto.`,
+      date: Date.now(),
+      expiresIn: context.ttl, // Tempo restante até a janela ser reiniciada
+    };
+  },
+});
 
 // const database = new DatabaseMemory();
 const database = new DatabasePostgres();
+
+fastify.get("/", async (request, reply) => {
+  return { message: "Bem-vindo à API!" };
+});
 
 server.post("/videos", async (request, reply) => {
   const { title, description, duration } = request.body;
