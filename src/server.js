@@ -7,7 +7,7 @@ const server = fastify({
   logger: true,
 });
 
-fastify.register(rateLimit, {
+server.register(rateLimit, {
   max: 100, // Máximo de requisições por janela de tempo
   timeWindow: "1 minute", // Janela de tempo (1 minuto)
   errorResponseBuilder: (req, context) => {
